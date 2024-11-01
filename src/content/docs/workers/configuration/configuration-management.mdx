@@ -1,0 +1,102 @@
+---
+pcx_content_type: Navigation
+title: Configuration management
+head: []
+description: Manage your configurations for Cloudflare Worker projects. 
+sidebar:
+  order: 1
+---
+import {
+	CardGrid,	
+	LinkButton,
+    LinkTitleCard
+} from "~/components";
+
+
+Cloudflare Workers can be configured using:
+
+* The [Cloudflare Dashboard](https://developers.cloudflare.com/workers/get-started/dashboard/)
+* [Wrangler](https://developers.cloudflare.com/workers/wrangler/), along with a [`wrangler.toml`](https://developers.cloudflare.com/workers/wrangler/configuration/) file
+* Infrastructure-as-Code tools ([Terraform](https://developers.cloudflare.com/terraform/) and [Pulumi](https://developers.cloudflare.com/pulumi/))
+* The [Cloudflare API](https://developers.cloudflare.com/api/) 
+
+
+## Configuration options and use-cases
+
+As projects and teams grow, it’s important to consider the use-cases and best practices for each configuration management tool.
+
+### Cloudflare Dashboard 
+Settings for your Workers can be manually configured in the Cloudflare Dashboard. 
+
+Making manual changes through the dashboard is best for: 
+* **Small-scale changes:** For one-off adjustments or when managing a smaller environment, use the Dashboard. 
+
+* **Prototyping and testing:** For rapid testing or developing Proof-of-Concepts, the Dashboard provides a quicker setup. 
+
+* **Temporary infrastructure:** For transient or short-lived resources, use the Dashboard to avoid setup overhead and easier resource deletion. 
+
+
+<LinkButton href="https://dash.cloudflare.com/" icon="external">
+	Launch the Dashboard
+</LinkButton>
+
+
+### Wrangler and `wrangler.toml` 
+Wrangler is a powerful CLI for managing and deploying Cloudflare Workers, and uses a `wrangler.toml` configuration file to read and apply configuration settings. You define Worker settings and resources used by that Worker in a `wrangler.toml` file, as well as environment information. 
+
+
+Configuring Workers in a `wrangler.toml` configuration file is best for: 
+
+* **Binding resources and services:** The `wrangler.toml` file allows you to easily bind resources such as [KV namespaces](https://developers.cloudflare.com/workers/wrangler/configuration/#kv-namespaces), [Durable Objects](https://developers.cloudflare.com/workers/wrangler/configuration/#durable-objects), and [R2 buckets](https://developers.cloudflare.com/workers/wrangler/configuration/#r2-buckets) directly to your Worker. Wrangler reads your configuration file and attaches defined bindings to your Worker when it’s deployed, ensuring your Worker has access to all required resources. 
+
+* **Managing multiple environments:**[ Multiple environments](https://developers.cloudflare.com/workers/wrangler/configuration/#environments) (development, staging, production, etc) can be configured in a `wrangler.toml`, each with unique configurations. Environments defined in `wrangler.toml` can have distinct routes, bindings, and environment variables, so that teams can test and deploy across stages. 
+
+* **Local development and testing:** Wrangler provides features specifically designed for local development and testing, such as the [`wrangler dev` command](https://developers.cloudflare.com/workers/wrangler/commands/#dev). When you run `wrangler dev`, Wrangler uses the `wrangler.toml` file to setup your Worker locally with the same configuration as your staging or production environment, so that you can safely test in an environment that closely matches the live settings. 
+
+<LinkButton href="https://developers.cloudflare.com/workers/wrangler/configuration/" icon="external">
+	Wrangler configuration docs
+</LinkButton>
+
+### Infrastructure-as-Code (IaC)
+
+Many teams today have adopted Infrastructure-as-Code (IaC) tooling to ensure that infrastructure changes are tracked over time, maintained in version control, and are consistent across environments. Cloudflare Workers can be configured in both Terraform and Pulumi, using the [Cloudflare Terraform Provider](https://github.com/cloudflare/terraform-provider-cloudflare). 
+
+Configuring and managing Workers through IaC is best for changes that require:
+
+* **Consistency and Versioning:** IaC ensures that infrastructure is deployed consistently across environments, with clear version control.
+
+* **Scalability:** As infrastructure grows, managing resources manually becomes tedious and can result in errors. Making changes through a single source of truth allows for those changes to be applied at a larger scale, rather than on a resource-by-resource basis. 
+
+* **Collaboration:** With IaC, infrastructure changes are managed in code, allowing teams to review, approve, and collaborate infrastructure changes  as they do with application code. 
+
+* **Auditing and compliance:** IaC provides a record of infrastructure changes, making it easy to track and audit in order to stay compliant. 
+
+<CardGrid>
+
+<LinkTitleCard title="Cloudflare Terraform docs" href="https://developers.cloudflare.com/terraform/" icon="external">
+	Learn more about managing Cloudflare resources in Terraform. 
+</LinkTitleCard>
+
+<LinkTitleCard title="Cloudflare Pulumi docs" href="https://developers.cloudflare.com/pulumi/" icon="external">
+	Learn more about managing Cloudflare resources in Pulumi. 
+</LinkTitleCard>
+
+<LinkTitleCard title="Cloudflare Terraform Provider" href="https://github.com/cloudflare/terraform-provider-cloudflare" icon="external">
+	Use the Cloudflare Terraform provider. 
+</LinkTitleCard>
+
+</CardGrid>
+
+### Cloudflare API
+
+The Cloudflare API allows developers to programmatically manage Workers scripts, routes, environment variables, and bindings. 
+
+Configuring and managing Workers through the Cloudflare API is ideal for: 
+
+* **Scalable, real-time deployments:** The API is excellent for handling high-volume and resource-specific tasks, especially those that require immediate execution. For example, a team might want to automate the creation of specific resources each time a new user account is added. The API can handle tasks like these instantly and in isolation, whereas Infrastructure-as-Code (IaC) is designed for managing an entire infrastructure stack, which can take longer to deploy and can impact other resources.
+
+* **Advanced management and automation:** Many teams today use the Cloudflare API for tasks that go beyond basic resource management, especially for scenarios where dynamic data is needed. For example, teams can use the API to create an ephemeral Workers KV store, insert dummy data, run automated tests, and tear down the temporary resources. 
+
+<LinkButton href="https://developers.cloudflare.com/api/" icon="external">
+	Cloudflare API docs
+</LinkButton>
