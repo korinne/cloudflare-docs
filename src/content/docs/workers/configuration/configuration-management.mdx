@@ -23,7 +23,7 @@ Cloudflare Workers can be configured using:
 
 ## Configuration options and use-cases
 
-As projects and teams grow, it’s important to consider the use-cases and best practices for each configuration management tool.
+As projects and teams grow, it's important to consider the use-cases and best practices for each configuration management tool.
 
 ### Cloudflare Dashboard 
 Settings for your Workers can be manually configured in the Cloudflare Dashboard. 
@@ -47,7 +47,7 @@ Wrangler is a powerful CLI for managing and deploying Cloudflare Workers, and us
 
 Configuring Workers in a `wrangler.toml` configuration file is best for: 
 
-* **Binding resources and services:** The `wrangler.toml` file allows you to easily bind resources such as [KV namespaces](https://developers.cloudflare.com/workers/wrangler/configuration/#kv-namespaces), [Durable Objects](https://developers.cloudflare.com/workers/wrangler/configuration/#durable-objects), and [R2 buckets](https://developers.cloudflare.com/workers/wrangler/configuration/#r2-buckets) directly to your Worker. Wrangler reads your configuration file and attaches defined bindings to your Worker when it’s deployed, ensuring your Worker has access to all required resources. 
+* **Binding resources and services:** The `wrangler.toml` file allows you to easily bind resources such as [KV namespaces](https://developers.cloudflare.com/workers/wrangler/configuration/#kv-namespaces), [Durable Objects](https://developers.cloudflare.com/workers/wrangler/configuration/#durable-objects), and [R2 buckets](https://developers.cloudflare.com/workers/wrangler/configuration/#r2-buckets) directly to your Worker. Wrangler reads your configuration file and attaches defined bindings to your Worker when it's deployed, ensuring your Worker has access to all required resources.
 
 * **Managing multiple environments:**[ Multiple environments](https://developers.cloudflare.com/workers/wrangler/configuration/#environments) (development, staging, production, etc) can be configured in a `wrangler.toml`, each with unique configurations. Environments defined in `wrangler.toml` can have distinct routes, bindings, and environment variables, so that teams can test and deploy across stages. 
 
