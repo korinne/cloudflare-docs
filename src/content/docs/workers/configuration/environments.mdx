@@ -1,0 +1,172 @@
+---
+pcx_content_type: configuration
+title: Environments
+sidebar:
+  order: 10
+head: []
+description: You can add environment variables, which are a type of binding, to attach text strings or JSON values to your Worker.
+---
+
+import {
+	Details,
+	LinkCard,
+	Render,
+	PackageManagers,
+	WranglerConfig,
+	InlineBadge,
+	CardGrid,
+	Card,
+	Type,
+	TypeScriptExample,
+	Tabs,
+	TabItem,
+} from "~/components";
+
+A Worker has three default **environments**:
+
+- **Development** - for developing on your local machine, using the [Wrangler CLI](/workers/wrangler/) or [Cloudflare Vite plugin](/workers/vite-plugin/).
+- **Preview** - for developing features in isolation on a branch, so that you can share [Preview URLs](/workers/configuration/previews/) with others without impacting what's running in production.
+- **Production** - for deploying your Worker to serve live traffic on your [workers.dev](/workers/configuration/routing/workers-dev/), [custom domain](/workers/configuration/routing/custom-domains/), or [Route](/workers/configuration/routing/routes/).
+
+By default, [`wrangler deploy`](/workers/wrangler/commands/#deploy) deploys your Worker to its **production** environment and made available on its [workers.dev](/workers/configuration/routing/workers-dev/) subdomain. To deploy your Worker to its **preview** environment, you run `wrangler deploy --preview`.
+
+## Development
+
+You use your **development** environment when you run:
+
+- [`wrangler dev`](/workers/wrangler/commands/#dev), the Wrangler CLI's built-in `dev` command.
+- `vite dev` when using the [Cloudflare Vite plugin](/workers/vite-plugin/).
+
+Both Wrangler and the Cloudflare Vite plugin use [Miniflare](/workers/testing/miniflare/) under the hood to simulate Cloudflare resources on your local machine. For guidance on choosing when to use Wrangler versus Vite, see our guide [Choosing between Wrangler & Vite](/workers/development-testing/wrangler-vs-vite/).
+
+The [Wrangler CLI](/workers/wrangler/) allows you to simulate Cloudflare's network and resources on your local machine, so that you can test out features without being online or incurring costs.
+
+1. To get started, install either the Wrangler CLI or the Cloudflare Vite plugin.
+
+<Tabs syncKey="dashPlusAPI">
+<TabItem label="Wrangler CLI">
+
+```sh
+npm i -D wrangler@latest
+```
+
+</TabItem>
+<TabItem label="Cloudflare Vite plugin">
+
+```sh
+npm i -D vite @cloudflare/vite-plugin wrangler
+```
+
+</TabItem>
+</Tabs>
+
+## Migrating
+
+On your first deployment, [Wrangler](/workers/wrangler/) will:
+
+1. Auto-provision resources ([KV namespaces](/kv/), [R2 buckets](/r2/), etc.) for both preview and production
+2. Update your [config file](/workers/wrangler/configuration/) with environment-specific blocks
+3. Deploy to both `my-worker.cloudflare.app` (production) and `preview.my-worker.cloudflare.app` (preview)
+4. Create three environment configurations in the dashboard: dev, preview, and production
+
+## Configure environment settings
+
+<Tabs syncKey="dashPlusAPI">
+<TabItem label="CLI">
+
+Use the [Wrangler CLI](/workers/wrangler/) to configure environment settings via your `wrangler.toml` configuration file.
+
+```toml
+# wrangler.toml
+name = "my-worker"
+
+# Production environment
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+# Staging environment
+[env.staging]
+vars = { ENVIRONMENT = "staging" }
+```
+
+Deploy to a specific environment:
+
+```bash
+wrangler deploy --env production
+```
+
+</TabItem>
+<TabItem label="Dashboard">
+
+1. Log in to the [Cloudflare dashboard](https://dash.cloudflare.com) and select your account.
+2. Go to **Workers & Pages**.
+3. Select your Worker.
+4. Go to **Settings** > **Variables**.
+5. Add your environment-specific configuration.
+
+</TabItem>
+<TabItem label="API">
+
+Use the [Cloudflare API](https://developers.cloudflare.com/api/) to configure Worker environments programmatically.
+
+```bash
+curl -X PUT "https://api.cloudflare.com/client/v4/accounts/{account_id}/workers/scripts/{script_name}" \
+  -H "Authorization: Bearer {api_token}" \
+  -H "Content-Type: application/javascript" \
+  --data-binary "@worker.js"
+```
+
+</TabItem>
+<TabItem label="TypeScript SDK">
+
+Use the [Cloudflare TypeScript SDK](https://github.com/cloudflare/cloudflare-typescript) to manage environments programmatically.
+
+```typescript
+import Cloudflare from "cloudflare";
+
+const client = new Cloudflare({
+	apiToken: process.env.CLOUDFLARE_API_TOKEN,
+});
+
+await client.workers.scripts.update({
+	account_id: "your-account-id",
+	script_name: "my-worker",
+	// Your configuration here
+});
+```
+
+</TabItem>
+<TabItem label="Terraform">
+
+Use the [Cloudflare Terraform provider](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs) to manage Worker environments as infrastructure as code.
+
+```hcl
+resource "cloudflare_workers_script" "my_worker" {
+  account_id = var.account_id
+  name       = "my-worker"
+  content    = file("worker.js")
+
+  plain_text_binding {
+    name = "ENVIRONMENT"
+    text = "production"
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Pulumi">
+
+Use [Pulumi](https://www.pulumi.com/registry/packages/cloudflare/) to manage Worker environments with infrastructure as code.
+
+```typescript
+import * as cloudflare from "@pulumi/cloudflare";
+
+const worker = new cloudflare.WorkerScript("my-worker", {
+	accountId: "your-account-id",
+	name: "my-worker",
+	content: workerCode,
+});
+```
+
+</TabItem>
+</Tabs>
