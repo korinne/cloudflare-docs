@@ -17,9 +17,9 @@ To enable or disable a rule, you can specify which properties should be overridd
 
 You have multiple options for enabling rules:
 
-* Select an individual rule and enable it.
-* Enable multiple rules by enabling by category in the `magic-transit-phase`.
-* Enable an entire ruleset.
+- Select an individual rule and enable it.
+- Enable multiple rules by enabling by category in the `magic-transit-phase`.
+- Enable an entire ruleset.
 
 ## API
 
@@ -27,13 +27,13 @@ You have multiple options for enabling rules:
 
 To create a managed ruleset, you must first build a request with the following:
 
-* `managed_ruleset_id`: The ID of the Managed phase Managed kind ruleset that contains the rule you want to enable.
-* `managed_rule_id`: The ID of the rule you want to enable.
+- `managed_ruleset_id`: The ID of the Managed phase Managed kind ruleset that contains the rule you want to enable.
+- `managed_rule_id`: The ID of the rule you want to enable.
 
 Additionally, you need the properties you want to override. The properties you can override include:
 
-* `enabled`: This value can be set to `true` or `false`. When set to `true`, the rule matches packets and applies the rule's default action if the action is not overridden. When set to `false`, the rule is disabled and does not match any packets.
-* `action`: The value can be set to `log` so the rule only produces logs instead of applying the rule's default action.
+- `enabled`: This value can be set to `true` or `false`. When set to `true`, the rule matches packets and applies the rule's default action if the action is not overridden. When set to `false`, the rule is disabled and does not match any packets.
+- `action`: The value can be set to `log` so the rule only produces logs instead of applying the rule's default action.
 
 The `enabled` and `action` properties for a rule are set in the Managed phase Managed kind ruleset. All rules in the Managed phase are currently disabled by default.
 
@@ -143,7 +143,7 @@ You can also use the dashboard to enable managed rulesets:
 2. Select **Packet filtering** and go to **Managed**. This is where the dashboard lists all your managed rules.
 3. To enable a rule, turn **Status** on.
 
-## Edit rules 
+## Edit rules
 
 To edit a rule:
 

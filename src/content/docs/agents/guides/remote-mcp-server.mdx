@@ -229,25 +229,30 @@ When you create the first secret, Wrangler will ask if you want to create a new 
 :::
 
 #### Set up a KV namespace
-- Create the KV namespace: 
+
+- Create the KV namespace:
+
 ```bash
 npx wrangler kv namespace create "OAUTH_KV"
 ```
+
 - Update the `wrangler.jsonc` file with the resulting KV ID:
 
 ```json
 {
-  "kvNamespaces": [
-    {
-      "binding": "OAUTH_KV",
-      "id": "<YOUR_KV_NAMESPACE_ID>"
-    }
-  ]
+	"kvNamespaces": [
+		{
+			"binding": "OAUTH_KV",
+			"id": "<YOUR_KV_NAMESPACE_ID>"
+		}
+	]
 }
 ```
+
 #### Deploy your server
 
 Deploy the MCP server to your Cloudflare `workers.dev` domain:
+
 ```bash
 npm run deploy
 ```

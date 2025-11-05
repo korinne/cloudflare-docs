@@ -22,15 +22,436 @@ import {
 	TabItem,
 } from "~/components";
 
-A Worker has three default **environments**:
+A Worker application has three default environments: **development**, **preview**, and **production**.
 
 - **Development** - for developing on your local machine, using the [Wrangler CLI](/workers/wrangler/) or [Cloudflare Vite plugin](/workers/vite-plugin/).
-- **Preview** - for developing features in isolation on a branch, so that you can share [Preview URLs](/workers/configuration/previews/) with others without impacting what's running in production.
-- **Production** - for deploying your Worker to serve live traffic on your [workers.dev](/workers/configuration/routing/workers-dev/), [custom domain](/workers/configuration/routing/custom-domains/), or [Route](/workers/configuration/routing/routes/).
 
-By default, [`wrangler deploy`](/workers/wrangler/commands/#deploy) deploys your Worker to its **production** environment and made available on its [workers.dev](/workers/configuration/routing/workers-dev/) subdomain. To deploy your Worker to its **preview** environment, you run `wrangler deploy --preview`.
+- **Preview** - for testing pull requests with **real, isolated** Cloudflare resources before merging changes to your production branch.
+
+- **Production** - for deploying your Worker application and any merged changes to end users.
+
+Each environment defines the **resources** (like KV namespaces, R2 buckets) and **configuration** (like environment variables and secrets) that your Worker uses in that context.
+
+## Getting started
+
+This guide will walk you through deploying a Worker application from scratch. To learn how to use environments with Workers that have already been deployed, see [this section].
+
+<Tabs syncKey="createMethod">
+<TabItem label="CLI">
+
+### Create a Worker application
+
+You can create a new Worker application using the `create-cloudflare` package:
+
+<PackageManagers
+	type="create"
+	pkg="cloudflare@latest"
+	args="my-app -- --framework=react --lang=ts"
+/>
+
+Move into your directory and build your application:
+
+```sh
+cd my-app && npm run build
+```
+
+## Review configuration
+
+Next, let's look at our `wrangler.jsonc` configuration file. It should look like this:
+
+<WranglerConfig>
+
+```jsonc title="wrangler.jsonc"
+{
+	"name": "my-worker",
+	"compatibility_date": "$today",
+	"assets": {
+		"not_found_handling": "single-page-application",
+	},
+	"development": {},
+	"preview": {},
+	"production": {},
+}
+```
+
+</WranglerConfig>
+
+As you'll see, there's configuration blocks for each **default environment**
+
+- **`development`:** The **development** environment defines what resources (like KV namespaces or R2 buckets) need local simulations. You can connect to a real, deployed resource during local development by just declaring the resources' ID or name (we'll show how in the next step).
+
+- **`preview`:** The **preview** environment defines the resources and environment variables that should be used for preview deployments, which are automatically deployed for each non-production branch when you connect your Git repository. This lets you share preview URLs with others and test functionality, without impacting production resources.
+
+- **`production`:** The **production** environment defines the resources and environment variables that should be used for your live application that's deployed on your `*.workers.dev` subdoman, custom domain, or route.
+
+## Add bindings and environment variables
+
+From here, you can add **bindings** and **environment variables** to each environment block.
+
+<WranglerConfig>
+```jsonc title="wrangler.jsonc"
+{
+  "name": "my-worker",
+  "compatibility_date": "$today",
+  "assets": {
+    "not_found_handling": "single-page-application"
+  },
+  "development": {
+    "kv_namespaces": [
+      {
+        "binding": "MY_KV"
+      }
+    ]
+  },
+  "preview": {
+    "vars": {
+      "ENVIRONMENT": "preview"
+    },
+    "kv_namespaces": [
+      {
+        "binding": "MY_KV"
+      }
+    ]
+  },
+  "production": {
+    "vars": {
+      "ENVIRONMENT": "production"
+    },
+    "kv_namespaces": [
+      {
+        "binding": "MY_KV"
+      }
+    ]
+  }
+}
+```
+
+</WranglerConfig>
+
+In this example, we've added:
+
+- **Bindings:** Within the `development`, `preview`, and `production` blocks, we've added a KV namespace binding `MY_KV`. This allows us to call `env.MY_KV` within our Worker code, but the resources that `env.MY_KV` interacts with will change depending on the environment context. In the next step, Cloudflare will automatically provision **separate KV namespaces** for our preview and production environments upon deployment.
+
+- **Environment variables:** We've added `vars` blocks to our `preview` and `production` environment, allowing us to use different environment variable values for each environment. For the **development** environment, you can place all environment variables (and secrets) in a `.env` file.
+
+## Deploy
+
+Now, let's deploy our Worker application:
+
+<PackageManagers type="exec" pkg="wrangler" args="deploy" />
+
+Because there aren't any existing KV namespaces for `MY_KV` to connect to, Wrangler automatically provisons separate **preview** and **production** KV namespaces.
+
+If you look again at your `wrangler.jsonc` file, you'll see that separate KV namespaces have been added to the **preview** and **production** environment:
+
+<WranglerConfig>
+```jsonc title="wrangler.jsonc"
+{
+  "name": "my-worker",
+  "compatibility_date": "$today",
+  "assets": {
+    "not_found_handling": "single-page-application"
+  },
+  "development": {
+    "kv_namespaces": [
+      {
+        "binding": "MY_KV"
+      }
+    ]
+  },
+  "preview": {
+    "kv_namespaces": [
+      {
+        "binding": "MY_KV",
+        "id": "<preview-kv-namespace-id>"
+      }
+    ]
+  },
+  "production": {
+    "kv_namespaces": [
+      {
+        "binding": "MY_KV",
+        "id": "<production-kv-namespace-id>"
+      }
+    ]
+  }
+}
+
+````
+
+</WranglerConfig>
+
+And you're done! In the dashboard, you should now see in the **Overview** tab two recent deployments:
+- A live **production** deployment, made immediately available on your `workers.dev` domain.
+- A **preview** deployment with a unique preview URL.
+
+You can automate production and preview deployments by connecting your Git repository to Cloudflare, making it easy to setup preview deployments with separate resources and configuration for your pull requests.
+
+## Connect your Git repository
+
+
+
+</TabItem>
+<TabItem label="Dashboard">
+
+### Prerequisites
+
+[Create a Cloudflare account](https://dash.cloudflare.com/sign-up/workers-and-pages).
+
+### Create a Worker
+
+1. Go to **Workers & Pages** in the [Cloudflare dashboard](https://dash.cloudflare.com).
+2. Select **Create application**.
+3. Choose from:
+   - Gallery of production-ready templates
+   - Import an existing Git repository
+   - Clone a public repository
+4. Connect your Git provider and configure your project.
+5. Select **Deploy**.
+
+Your Worker will be available at its `workers.dev` subdomain.
+
+### Continue development
+
+Clone your repository locally:
+
+```bash
+git clone <git repo URL>
+cd <directory>
+````
+
+Make changes, then deploy:
+
+```bash
+git add .
+git commit -m "your message"
+git push origin main
+```
+
+</TabItem>
+<TabItem label="API">
+
+### Prerequisites
+
+1. [Account ID](https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids)
+2. [API token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token)
+
+### Create and deploy a Worker
+
+```bash
+account_id="replace_me"
+api_token="replace_me"
+worker_name="my-hello-world-worker"
+
+worker_script_base64=$(echo '
+export default {
+  async fetch(request, env, ctx) {
+    return new Response("Hello World!");
+  }
+};
+' | base64)
+
+# Create the Worker
+worker_id=$(curl "https://api.cloudflare.com/client/v4/accounts/$account_id/workers/workers" \
+  -X POST \
+  -H "Authorization: Bearer $api_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "'$worker_name'"
+  }' \
+  | jq -r '.result.id')
+
+# Upload the Worker's first version
+version_id=$(curl "https://api.cloudflare.com/client/v4/accounts/$account_id/workers/workers/$worker_id/versions" \
+  -X POST \
+  -H "Authorization: Bearer $api_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "compatibility_date": "2025-09-04",
+    "main_module": "'$worker_name'.mjs",
+    "modules": [
+      {
+        "name": "'$worker_name'.mjs",
+        "content_type": "application/javascript+module",
+        "content_base64": "'$worker_script_base64'"
+      }
+    ]
+  }' \
+  | jq -r '.result.id')
+
+# Create a deployment
+curl "https://api.cloudflare.com/client/v4/accounts/$account_id/workers/scripts/$worker_name/deployments" \
+  -X POST \
+  -H "Authorization: Bearer $api_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "strategy": "percentage",
+    "versions": [
+      {
+        "percentage": 100,
+        "version_id": "'$version_id'"
+      }
+    ]
+  }'
+```
+
+</TabItem>
+<TabItem label="TypeScript SDK">
+
+### Prerequisites
+
+1. [Account ID](https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids)
+2. [API token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token)
+3. Install the [Cloudflare TypeScript SDK](https://github.com/cloudflare/cloudflare-typescript):
+
+```bash
+npm install cloudflare
+```
+
+### Create and deploy a Worker
+
+Create `deploy.ts`:
+
+```typescript
+import Cloudflare from "cloudflare";
+
+const WORKER_NAME = "my-hello-world-worker";
+const SCRIPT_FILENAME = `${WORKER_NAME}.mjs`;
+
+const client = new Cloudflare({
+	apiToken: process.env.CLOUDFLARE_API_TOKEN,
+});
+
+const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+
+async function main() {
+	const scriptContent = `
+    export default {
+      async fetch(request, env, ctx) {
+        return new Response("Hello World!");
+      },
+    }`.trim();
+
+	// Create the Worker
+	const worker = await client.workers.beta.workers.create({
+		account_id: accountId,
+		name: WORKER_NAME,
+	});
+
+	// Create the first version
+	const version = await client.workers.beta.workers.versions.create(worker.id, {
+		account_id: accountId,
+		main_module: SCRIPT_FILENAME,
+		compatibility_date: new Date().toISOString().split("T")[0],
+		modules: [
+			{
+				name: SCRIPT_FILENAME,
+				content_type: "application/javascript+module",
+				content_base64: Buffer.from(scriptContent).toString("base64"),
+			},
+		],
+	});
+
+	// Create a deployment
+	await client.workers.scripts.deployments.create(WORKER_NAME, {
+		account_id: accountId,
+		strategy: "percentage",
+		versions: [
+			{
+				percentage: 100,
+				version_id: version.id,
+			},
+		],
+	});
+
+	console.log(`Worker deployed: ${WORKER_NAME}`);
+}
+
+main();
+```
+
+Run with:
+
+```bash
+CLOUDFLARE_API_TOKEN=your_token CLOUDFLARE_ACCOUNT_ID=your_account_id node deploy.ts
+```
+
+</TabItem>
+<TabItem label="Terraform">
+
+### Prerequisites
+
+1. [Account ID](https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids)
+2. [API token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token)
+3. Install [Terraform](https://www.terraform.io/downloads)
+
+### Create a Worker
+
+Create a `main.tf` file:
+
+```hcl
+variable "account_id" {
+  default = "replace_me"
+}
+
+resource "cloudflare_worker" "my_worker" {
+  account_id = var.account_id
+  name = "my-worker"
+  observability = {
+    enabled = true
+  }
+}
+
+resource "cloudflare_worker_version" "my_worker_version" {
+  account_id = var.account_id
+  worker_id = cloudflare_worker.my_worker.id
+  compatibility_date = "2025-09-04"
+  main_module = "my-script.mjs"
+  modules = [
+    {
+      name = "my-script.mjs"
+      content_type = "application/javascript+module"
+      content_file = "my-script.mjs"
+    }
+  ]
+}
+
+resource "cloudflare_workers_deployment" "my_worker_deployment" {
+  account_id = var.account_id
+  script_name = cloudflare_worker.my_worker.name
+  strategy = "percentage"
+  versions = [{
+    percentage = 100
+    version_id = cloudflare_worker_version.my_worker_version.id
+  }]
+}
+```
+
+Create `my-script.mjs`:
+
+```javascript
+export default {
+	async fetch(request, env, ctx) {
+		return new Response("Hello World!");
+	},
+};
+```
+
+Deploy:
+
+```bash
+terraform init
+terraform apply
+```
+
+</TabItem>
+</Tabs>
 
 ## Development
+
+The **development** environment defines what resources (like KV namespaces or R2 buckets) need local simulations, and the environment variables and secrets that your Worker should use while developing locally.
+
+Think of it as a shared development setup that your team commits to git, ensuring everyone has the same local environment.
 
 You use your **development** environment when you run:
 

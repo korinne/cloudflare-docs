@@ -6,10 +6,9 @@ sidebar:
 head:
   - tag: title
     content: Override examples for Network-layer DDoS Attack Protection
-
 ---
 
-import { Details, GlossaryTooltip, DashButton } from "~/components"
+import { Details, GlossaryTooltip, DashButton } from "~/components";
 
 ## Use cases
 
@@ -17,7 +16,7 @@ The following scenarios detail how you can make use of override rules as a solut
 
 ### VPN traffic is blocked by a UDP rule
 
-If you have VPN traffic concentrated to a single or a few single destination IP addresses and the traffic is being blocked by a UDP rule, you can create an override rule for the UDP rule to the destination IPs or ranges. 
+If you have VPN traffic concentrated to a single or a few single destination IP addresses and the traffic is being blocked by a UDP rule, you can create an override rule for the UDP rule to the destination IPs or ranges.
 
 :::note
 The override only applies to the fingerprint and not the detection. Refer to [Important remarks](/ddos-protection/managed-rulesets/network/network-overrides/override-expressions/#important-remarks) for more information.
@@ -33,11 +32,12 @@ To avoid disruptions during initial deployment, you can create a _Log_ only – 
 
 1. In the Cloudflare dashboard, go to the **Security rules** page.
 
-    <DashButton url="/?to=/:account/:zone/security/security-rules" />
+   <DashButton url="/?to=/:account/:zone/security/security-rules" />
+
 2. Go to the **DDoS protection** tab.
 3. On **HTTP DDoS attack protection**, select **Create override**.
 4. Set the **Scope** to _Apply to all incoming packets_.
 5. Under **Ruleset configuration**:
-    - Set the **Ruleset action** to _Log_.
-    - Set the **Ruleset sensitivity** to _Essentially Off_. 
-6. Select **Save**. 
+   - Set the **Ruleset action** to _Log_.
+   - Set the **Ruleset sensitivity** to _Essentially Off_.
+6. Select **Save**.

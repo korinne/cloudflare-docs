@@ -32,15 +32,17 @@ Alarms can be used to build distributed primitives, like queues or batching of w
 ### `getAlarm`
 
 - <code>getAlarm()</code>: <Type text="number | null" />
-
   - If there is an alarm set, then return the currently set alarm time as the number of milliseconds elapsed since the UNIX epoch. Otherwise, return `null`.
 
   - If `getAlarm` is called while an [`alarm`](/durable-objects/api/alarms/#alarm) is already running, it returns `null` unless `setAlarm` has also been called since the alarm handler started running.
 
 ### `setAlarm`
 
-- <code> setAlarm(scheduledTimeMs <Type text="number" />) </code>: <Type text="void" />
-
+- <code>
+  	{" "}
+  	setAlarm(scheduledTimeMs <Type text="number" />){" "}
+  </code>
+  : <Type text="void" />
   - Set the time for the alarm to run. Specify the time as the number of milliseconds elapsed since the UNIX epoch.
   - If you call `setAlarm` when there is already one scheduled, it will override the existing alarm.
 
@@ -53,7 +55,6 @@ This is due to the fact that, if the Durable Object wakes up after being inactiv
 ### `deleteAlarm`
 
 - `deleteAlarm()`: <Type text='void' />
-
   - Unset the alarm if there is a currently set alarm.
 
   - Calling `deleteAlarm()` inside the `alarm()` handler may prevent retries on a best-effort basis, but is not guaranteed.
@@ -62,12 +63,13 @@ This is due to the fact that, if the Durable Object wakes up after being inactiv
 
 ### `alarm`
 
-- <code>alarm(alarmInfo <Type text="Object" />)</code>: <Type text="void" />
-
+- <code>
+  	alarm(alarmInfo <Type text="Object" />)
+  </code>
+  : <Type text="void" />
   - Called by the system when a scheduled alarm time is reached.
 
   - The optional parameter `alarmInfo` object has two properties:
-
     - `retryCount` <Type text="number"/>: The number of times this alarm event has been retried.
     - `isRetry` <Type text="boolean"/>: A boolean value to indicate if the alarm has been retried. This value is `true` if this alarm event is a retry.
 

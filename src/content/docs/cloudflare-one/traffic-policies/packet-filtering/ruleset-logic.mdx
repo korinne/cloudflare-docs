@@ -2,10 +2,10 @@
 title: Ruleset logic
 pcx_content_type: concept
 sidebar:
-    order: 8
+  order: 8
 ---
 
-import { GlossaryTooltip } from "~/components"
+import { GlossaryTooltip } from "~/components";
 
 Magic Firewall rules are performed after Cloudflare's DDoS mitigations have been applied. The two systems are independent, and therefore, permitting traffic inside Magic Firewall does not allow it within our DDoS mitigations. Traffic can still be blocked by DDoS mitigations that are applied first in the flow through Cloudflare's systems.
 
@@ -15,8 +15,8 @@ By default, Magic Firewall policies allow all traffic until explicitly blocked b
 
 You have two options for configuring a security policy:
 
-* Enforce a positive security model and only permit required traffic and block everything else.
-* Begin with a minimal ruleset to block specific traffic and, by default, everything else is permitted.
+- Enforce a positive security model and only permit required traffic and block everything else.
+- Begin with a minimal ruleset to block specific traffic and, by default, everything else is permitted.
 
 Traffic is matched in order of the configured rules. As soon as traffic is matched by an enabled rule, it is no longer validated against the later rules, and traffic will pass through disabled rules. In the dashboard under **Traffic policies** > **Magic Firewall**, rule order begins from the top and flows down your list of rules.
 

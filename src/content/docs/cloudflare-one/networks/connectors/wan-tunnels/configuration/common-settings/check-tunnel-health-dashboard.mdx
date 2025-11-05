@@ -14,12 +14,14 @@ import { Render } from "~/components";
 		dashInfo:
 			"The dashboard shows the view of tunnel health as measured from each Cloudflare location where your traffic is likely to land.",
 		productPath: "Insights > Network visibility > WAN connector health",
-		graphQL: "/cloudflare-one/networks/connectors/wan-tunnels/analytics/query-tunnel-health/",
+		graphQL:
+			"/cloudflare-one/networks/connectors/wan-tunnels/analytics/query-tunnel-health/",
 		notificationsPath:
 			"[notifications wizard](/cloudflare-one/networks/connectors/wan-tunnels/configuration/common-settings/configure-magic-tunnel-health-alerts/)",
 		packetCaptures: "/magic-firewall/packet-captures/",
-		networkAnalytics: "/cloudflare-one/networks/connectors/wan-tunnels/analytics/network-analytics/",
-		magicWord: "WAN Tunnels"
+		networkAnalytics:
+			"/cloudflare-one/networks/connectors/wan-tunnels/analytics/network-analytics/",
+		magicWord: "WAN Tunnels",
 	}}
 />
 
@@ -37,6 +39,7 @@ import { Render } from "~/components";
 	file="tunnel-health/mconn-heartbeat-health"
 	product="networking-services"
 	params={{
-		heartbeatURL: "/cloudflare-one/networks/connectors/wan-tunnels/configuration/appliances/maintenance/heartbeat/"
+		heartbeatURL:
+			"/cloudflare-one/networks/connectors/wan-tunnels/configuration/appliances/maintenance/heartbeat/",
 	}}
 />

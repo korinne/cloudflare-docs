@@ -23,6 +23,7 @@ If you cannot find the answer you are looking for, join us on [Discord](https://
 ### Does local development support all Browser Rendering features?
 
 Not yet. Local development currently has the following limitation(s):
+
 - Requests larger than 1 MB are not supported.
 
 <Render file="remote-binding-note" product="workers" />
@@ -41,10 +42,7 @@ No. Browser Rendering requests originate from Cloudflare's global network and yo
 
 There is no fixed limit on the number of requests per browser session. A single browser can handle multiple requests as long as it stays within available compute and memory limits.
 
-<Render
-  file="manage-concurrency-faq"
-  product="browser-rendering"
-/>
+<Render file="manage-concurrency-faq" product="browser-rendering" />
 
 ---
 
@@ -65,6 +63,7 @@ To resolve: [Upgrade to a Workers Paid plan](/workers/platform/pricing/) which a
 A `422 Unprocessable Entity` error usually means that Browser Rendering wasn’t able to complete an action because of an issue with the site.
 
 This can happen if:
+
 - The website consumes too much memory during rendering.
 - The page itself crashed or returned an error before the action completed.
 - The request exceeded one of the [timeout limits](/browser-rendering/reference/timeouts/) for page load, element load, or an action.
